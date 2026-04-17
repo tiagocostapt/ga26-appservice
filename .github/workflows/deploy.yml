@@ -114,12 +114,24 @@ jobs:
             --template-file infra/main.bicep \
             --parameters infra/parameters.dev.bicepparam
 
+      - name: Package published app
+        run: |
+          cd publish
+          zip -r ../app.zip .
+
+      - name: Deploy app to App Service
+        run: |
+          APP_NAME=$(az webapp list \
+            --resource-group rg-ga26demo-dev \
+            --query '[0].name' -o tsv)
+          az webapp deployment source config-zip \
+            --resource-group rg-ga26demo-dev \
+            --name "$APP_NAME" \
+            --src app.zip
+
       - name: Get App Service URL
         id: app-url
         run: |
-          URL=$(az appservice plan list \
-            --resource-group rg-ga26demo-dev \
-            --query '[0]' -o json | jq -r '.name')
           APP_NAME=$(az webapp list \
             --resource-group rg-ga26demo-dev \
             --query '[0].name' -o tsv)
@@ -175,6 +187,21 @@ jobs:
             --resource-group rg-ga26demo-prod \
             --template-file infra/main.bicep \
             --parameters infra/parameters.prod.bicepparam
+
+      - name: Package published app
+        run: |
+          cd publish
+          zip -r ../app.zip .
+
+      - name: Deploy app to App Service
+        run: |
+          APP_NAME=$(az webapp list \
+            --resource-group rg-ga26demo-prod \
+            --query '[0].name' -o tsv)
+          az webapp deployment source config-zip \
+            --resource-group rg-ga26demo-prod \
+            --name "$APP_NAME" \
+            --src app.zip
 
       - name: Get App Service URL
         id: app-url
