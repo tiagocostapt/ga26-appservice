@@ -1,0 +1,80 @@
+@{
+    ViewData["Title"] = "GA26 Azure App Services Demo";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Azure App Services Demo</h1>
+    <p class="lead">Infrastructure as Code with Bicep</p>
+    
+    <div class="card mt-4" style="max-width: 600px; margin: 0 auto;">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Configuration Values</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6 text-start">
+                    <strong>Application Name:</strong>
+                </div>
+                <div class="col-md-6 text-start">
+                    <span id="appName">@ViewData["ApplicationName"]</span>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6 text-start">
+                    <strong>Environment:</strong>
+                </div>
+                <div class="col-md-6 text-start">
+                    <span class="badge bg-info">@ViewData["Environment"]</span>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6 text-start">
+                    <strong>Demo Value (env var):</strong>
+                </div>
+                <div class="col-md-6 text-start">
+                    <span class="badge bg-success">@ViewData["DemoValue"]</span>
+                </div>
+            </div>
+            
+            <hr />
+            
+            <div class="row mb-3">
+                <div class="col-md-6 text-start">
+                    <strong>Full Configuration:</strong>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-sm btn-primary" onclick="fetchConfig()">Load from API</button>
+                </div>
+            </div>
+            
+            <div id="configResult" class="mt-3" style="display:none;">
+                <pre id="configJson" class="bg-light p-3 rounded" style="max-height: 300px; overflow-y: auto;"></pre>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <p class="text-muted">@ViewData["Description"]</p>
+        <p class="text-muted">
+            <small>
+                Check Application Insights in Azure Portal for monitoring and logs
+            </small>
+        </p>
+    </div>
+</div>
+
+<script>
+    async function fetchConfig() {
+        try {
+            const response = await fetch('/api/config');
+            const data = await response.json();
+            document.getElementById('configJson').textContent = JSON.stringify(data, null, 2);
+            document.getElementById('configResult').style.display = 'block';
+        } catch (error) {
+            document.getElementById('configJson').textContent = 'Error: ' + error.message;
+            document.getElementById('configResult').style.display = 'block';
+        }
+    }
+</script>
