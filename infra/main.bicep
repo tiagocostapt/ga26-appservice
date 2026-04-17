@@ -26,7 +26,7 @@ param tags object = {
 }
 
 // Generate unique suffix for storage account (must be globally unique)
-var uniqueSuffix = uniqueString(resourceGroup().id)
+var uniqueSuffix = substring(uniqueString(resourceGroup().id), 0, 8)
 
 // Resource names
 var appServicePlanName = '${appName}-${environment}-plan'
@@ -98,7 +98,7 @@ resource appService 'Microsoft.Web/sites@2023-01-01' = {
         }
         {
           name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-          value: enableApplicationInsights ? applicationInsights.properties.ConnectionString : ''
+          value: enableApplicationInsights ? applicationInsights!.properties.ConnectionString : ''
         }
         {
           name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
@@ -155,7 +155,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
 }
 
 // Diagnostic Settings for App Service
-resource appServiceDiagnostics 'Microsoft.Insights/diagnosticSettings@2017-05-01-preview' = if (enableApplicationInsights) {
+resource appServiceDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableApplicationInsights) {
   name: 'appservice-diagnostics'
   scope: appService
   properties: {
@@ -165,28 +165,16 @@ resource appServiceDiagnostics 'Microsoft.Insights/diagnosticSettings@2017-05-01
       {
         category: 'AppServiceHTTPLogs'
         enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 7
-        }
       }
       {
         category: 'AppServiceConsoleLogs'
         enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 7
-        }
       }
     ]
     metrics: [
       {
         category: 'AllMetrics'
         enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 7
-        }
       }
     ]
   }
@@ -202,10 +190,10 @@ output appServiceHostname string = appService.properties.defaultHostName
 output appServiceUrl string = 'https://${appService.properties.defaultHostName}'
 
 @description('Application Insights Instrumentation Key')
-output applicationInsightsKey string = enableApplicationInsights ? applicationInsights.properties.InstrumentationKey : ''
+output applicationInsightsKey string = enableApplicationInsights ? applicationInsights!.properties.InstrumentationKey : ''
 
 @description('Application Insights Connection String')
-output applicationInsightsConnectionString string = enableApplicationInsights ? applicationInsights.properties.ConnectionString : ''
+output applicationInsightsConnectionString string = enableApplicationInsights ? applicationInsights!.properties.ConnectionString : ''
 
 @description('Resource Group ID')
 output resourceGroupId string = resourceGroup().id
