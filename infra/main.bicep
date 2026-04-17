@@ -159,7 +159,6 @@ resource appServiceDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01
   name: 'appservice-diagnostics'
   scope: appService
   properties: {
-    workspaceId: ''
     storageAccountId: storageAccount.id
     logs: [
       {
