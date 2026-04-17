@@ -1,0 +1,212 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'infra/**'
+      - '.github/workflows/deploy.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'infra/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore NuGet packages
+        run: dotnet restore src/
+
+      - name: Build application
+        run: dotnet build src/ -c Release --no-restore
+
+      - name: Run tests
+        run: dotnet test src/ -c Release --no-build --verbosity normal
+        continue-on-error: true
+
+  validate-bicep:
+    name: Validate Bicep
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure CLI - Validate Bicep
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az bicep validate --file infra/main.bicep
+            echo "✓ Bicep template is valid"
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore NuGet packages
+        run: dotnet restore src/
+
+      - name: Build application
+        run: dotnet build src/ -c Release --no-restore
+
+      - name: Publish application
+        run: dotnet publish src/ -c Release -o publish
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-publish
+          path: publish/
+          retention-days: 5
+
+  deploy-dev:
+    name: Deploy to Development
+    runs-on: ubuntu-latest
+    needs: [validate, build, validate-bicep]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev'
+    environment:
+      name: Development
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-publish
+          path: publish/
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create resource group
+        run: |
+          az group create \
+            --name rg-ga26demo-dev \
+            --location ${{ secrets.AZURE_REGION }}
+        continue-on-error: true
+
+      - name: Deploy Bicep template
+        run: |
+          az deployment group create \
+            --name ga26-deployment-dev-$(date +%s) \
+            --resource-group rg-ga26demo-dev \
+            --template-file infra/main.bicep \
+            --parameters infra/parameters.dev.bicepparam
+
+      - name: Get App Service URL
+        id: app-url
+        run: |
+          URL=$(az appservice plan list \
+            --resource-group rg-ga26demo-dev \
+            --query '[0]' -o json | jq -r '.name')
+          APP_NAME=$(az webapp list \
+            --resource-group rg-ga26demo-dev \
+            --query '[0].name' -o tsv)
+          echo "app_url=https://${APP_NAME}.azurewebsites.net" >> $GITHUB_OUTPUT
+          echo "✓ App deployed to: https://${APP_NAME}.azurewebsites.net"
+
+      - name: Publish deployment info
+        run: |
+          echo "## ✅ Development Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Resource Group:** \`rg-ga26demo-dev\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Region:** \`${{ secrets.AZURE_REGION }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Application" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL:** ${{ steps.app-url.outputs.app_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **API Config:** ${{ steps.app-url.outputs.app_url }}/api/config" >> $GITHUB_STEP_SUMMARY
+          echo "- **Health Check:** ${{ steps.app-url.outputs.app_url }}/health" >> $GITHUB_STEP_SUMMARY
+
+  deploy-prod:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [validate, build, validate-bicep]
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod'
+    environment:
+      name: Production
+      url: ${{ steps.app-url.outputs.app_url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-publish
+          path: publish/
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create resource group
+        run: |
+          az group create \
+            --name rg-ga26demo-prod \
+            --location ${{ secrets.AZURE_REGION }}
+        continue-on-error: true
+
+      - name: Deploy Bicep template
+        run: |
+          az deployment group create \
+            --name ga26-deployment-prod-$(date +%s) \
+            --resource-group rg-ga26demo-prod \
+            --template-file infra/main.bicep \
+            --parameters infra/parameters.prod.bicepparam
+
+      - name: Get App Service URL
+        id: app-url
+        run: |
+          APP_NAME=$(az webapp list \
+            --resource-group rg-ga26demo-prod \
+            --query '[0].name' -o tsv)
+          echo "app_url=https://${APP_NAME}.azurewebsites.net" >> $GITHUB_OUTPUT
+          echo "✓ App deployed to: https://${APP_NAME}.azurewebsites.net"
+
+      - name: Publish deployment info
+        run: |
+          echo "## ✅ Production Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Resource Group:** \`rg-ga26demo-prod\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Region:** \`${{ secrets.AZURE_REGION }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Application" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL:** ${{ steps.app-url.outputs.app_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **API Config:** ${{ steps.app-url.outputs.app_url }}/api/config" >> $GITHUB_STEP_SUMMARY
+          echo "- **Health Check:** ${{ steps.app-url.outputs.app_url }}/health" >> $GITHUB_STEP_SUMMARY

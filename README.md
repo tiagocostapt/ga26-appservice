@@ -12,6 +12,7 @@ This demo showcases:
 - **Application Insights** - Built-in monitoring and diagnostics
 - **Multiple Environments** - Dev and Production configurations
 - **Automated Deployment** - Scripts for easy deployment
+- **CI/CD with GitHub Actions** - Automatic builds, validation, and deployment
 
 ## 📁 Project Structure
 
@@ -112,6 +113,34 @@ az deployment group create \
   --template-file infra/main.bicep \
   --parameters infra/parameters.dev.bicepparam
 ```
+
+#### Automated Deployment with GitHub Actions
+
+The repository includes GitHub Actions workflows for automatic deployment. See [GITHUB_ACTIONS_SETUP.md](GITHUB_ACTIONS_SETUP.md) for complete setup instructions.
+
+**Quick Start:**
+
+1. Create an Azure Service Principal:
+   ```bash
+   az ad sp create-for-rbac \
+     --name "github-actions-ga26" \
+     --role Contributor \
+     --scopes /subscriptions/{SUBSCRIPTION_ID} \
+     --json-auth
+   ```
+
+2. Add GitHub Secrets:
+   - `AZURE_CREDENTIALS` - Service Principal JSON (from above)
+   - `AZURE_REGION` - Azure region (e.g., `eastus`)
+
+3. Workflows automatically:
+   - Validate code and Bicep on pull requests
+   - Deploy to development on push to main
+   - Allow manual deployment to production
+
+**Workflow Files:**
+- `.github/workflows/deploy.yml` - Build, validate, and deploy
+- `.github/workflows/pr-validation.yml` - Pull request checks
 
 ## 📋 Environment Variables
 

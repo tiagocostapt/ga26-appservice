@@ -21,7 +21,79 @@ dotnet run
 az group delete --name rg-ga26demo-dev --yes
 ```
 
-## 📊 Useful Azure CLI Commands
+## � GitHub Actions - CI/CD Pipeline
+
+### Setup (One-time)
+
+```bash
+# 1. Create Service Principal
+SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+az ad sp create-for-rbac \
+  --name "github-actions-ga26" \
+  --role Contributor \
+  --scopes /subscriptions/$SUBSCRIPTION_ID \
+  --json-auth > credentials.json
+
+# 2. Add to GitHub Secrets:
+# - AZURE_CREDENTIALS: (entire JSON from credentials.json)
+# - AZURE_REGION: (e.g., "eastus")
+```
+
+### Trigger Deployments
+
+```bash
+# Push to main → Automatic dev deployment
+git commit -am "Update"
+git push origin main
+
+# Or manually trigger from Actions tab:
+# 1. Go to Actions → Deploy to Azure
+# 2. Click "Run workflow"
+# 3. Select environment (dev/prod)
+# 4. Click "Run workflow"
+```
+
+### Monitor Workflows
+
+```bash
+# In GitHub:
+# 1. Go to Actions tab
+# 2. Click on workflow run
+# 3. View real-time logs
+# 4. Check deployment results
+
+# Common workflow jobs:
+# - Validate (build & test code)
+# - Validate-bicep (check infrastructure templates)
+# - Build (publish app)
+# - Deploy-dev (automatic on main push)
+# - Deploy-prod (manual only)
+```
+
+### Useful Workflow Commands
+
+```bash
+# View workflow file
+cat .github/workflows/deploy.yml
+
+# Validate workflow syntax
+# GitHub validates automatically on push
+
+# Run workflow checks locally
+# Use act tool: https://github.com/nektos/act
+act -l  # List available workflows
+act     # Run default workflow
+```
+
+### Setup Documentation
+
+For detailed setup instructions:
+```bash
+# Full GitHub Actions setup guide
+cat GITHUB_ACTIONS_SETUP.md
+```
+
+## �📊 Useful Azure CLI Commands
 
 ```bash
 # Login to Azure
