@@ -7,7 +7,7 @@ Congratulations! Your complete GA26 demo application has been created. This is a
 ### .NET Application (src/)
 A modern ASP.NET Core web application that showcases environment-based configuration:
 
-- **GA26Demo.csproj** - .NET 8 project file with Application Insights support
+- **GA26Demo.csproj** - .NET 10 project file with Application Insights support
 - **Program.cs** - Minimal ASP.NET Core setup with:
   - REST API endpoint `/api/config` to display configuration
   - Health check endpoint `/health`
@@ -23,7 +23,7 @@ A modern ASP.NET Core web application that showcases environment-based configura
 Enterprise-grade infrastructure templates:
 
 - **main.bicep** - Primary template deploying:
-  - App Service Plan (Linux, .NET 8)
+  - App Service Plan (Linux, .NET 10)
   - App Service with HTTPS, managed identity
   - Application Insights (monitoring)
   - Storage Account (diagnostics)
@@ -77,7 +77,7 @@ Easy-to-use deployment scripts:
 Ensure you have:
 - Azure subscription (billing enabled)
 - Azure CLI installed
-- .NET 8 SDK installed
+- .NET 10 SDK installed
 - Git (already configured in this environment)
 
 ### Step 1: Verify Setup
@@ -291,7 +291,7 @@ For issues with:
 You have a complete, production-ready demonstration of:
 - ✅ Azure App Services
 - ✅ Infrastructure as Code with Bicep
-- ✅ .NET 8 application
+- ✅ .NET 10 application
 - ✅ Environment-based configuration
 - ✅ Application Insights monitoring
 - ✅ Professional documentation

@@ -12,7 +12,7 @@
 │  │  ┌────────────────────────────────────────────────────────┐  │   │
 │  │  │              App Service (Linux)                       │  │   │
 │  │  │  ┌──────────────────────────────────────────────────┐  │  │   │
-│  │  │  │   GA26Demo (.NET 8 Application)                 │  │  │   │
+│  │  │  │   GA26Demo (.NET 10 Application)                 │  │  │   │
 │  │  │  │                                                   │  │  │   │
 │  │  │  │  • Program.cs (Main entry point)                │  │  │   │
 │  │  │  │  • Controllers (HomeController)                 │  │  │   │
@@ -27,7 +27,7 @@
 │  │  └────────────────────────────────────────────────────────┘  │   │
 │  │                                                                │   │
 │  │  SKU: B1 (Dev), P1V2 (Prod)                                   │   │
-│  │  Runtime: .NET 8 on Linux                                     │   │
+│  │  Runtime: .NET 10 on Linux                                     │   │
 │  │  HTTPS: Enabled                                               │   │
 │  │  Managed Identity: Enabled                                    │   │
 │  └──────────────────────────────────────────────────────────────┘   │
@@ -157,7 +157,7 @@ Bicep Template generates:
 ┌──────────────────────────────────────────────────────────────┐
 │ Step 4: Application Startup                                 │
 │ • App Service restarts                                      │
-│ • .NET 8 runtime boots                                      │
+│ • .NET 10 runtime boots                                      │
 │ • Program.cs executes                                       │
 │ • Reads environment variables from Bicep                    │
 │ • Application Insights SDK initializes                      │

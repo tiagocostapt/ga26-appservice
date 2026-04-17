@@ -1,6 +1,6 @@
 {
   "name": "GA26 Demo - .NET with Azure",
-  "image": "mcr.microsoft.com/devcontainers/dotnet:8-jammy",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:10-jammy",
   "features": {
     "ghcr.io/devcontainers/features/azure-cli:1": {},
     "ghcr.io/devcontainers/features/git:1": {}

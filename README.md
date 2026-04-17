@@ -48,7 +48,7 @@ ga26-appservice/
 
 - **Azure Account** with an active subscription
 - **Azure CLI** installed ([Install Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli))
-- **.NET 8 SDK** installed ([Download .NET](https://dotnet.microsoft.com/en-us/download/dotnet/8.0))
+- **.NET 10 SDK** installed ([Download .NET](https://dotnet.microsoft.com/en-us/download/dotnet/10.0))
 - **Bash** or **PowerShell** (for running deployment scripts)
 
 ### Local Development
@@ -138,7 +138,7 @@ The `main.bicep` template deploys:
 
 2. **App Service** - Hosts the .NET application
    - HTTPS enforcement
-   - .NET 8 runtime
+   - .NET 10 runtime
    - System-assigned managed identity
    - Application Insights integration
 

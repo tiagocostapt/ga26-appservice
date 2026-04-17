@@ -120,12 +120,12 @@ Write-Host "🔨 Build Check:" -ForegroundColor Cyan
 if (Test-Path "src/GA26Demo.csproj") {
     $content = Get-Content "src/GA26Demo.csproj" -Raw
     
-    if ($content -match "net8\.0") {
-        Write-Host "✓ .NET 8.0 target" -ForegroundColor Green
+    if ($content -match "net10\.0") {
+        Write-Host "✓ .NET 10.0 target" -ForegroundColor Green
         $PASSED++
     }
     else {
-        Write-Host "⚠ Not targeting .NET 8.0" -ForegroundColor Yellow
+        Write-Host "⚠ Not targeting .NET 10.0" -ForegroundColor Yellow
         $WARNINGS++
     }
     

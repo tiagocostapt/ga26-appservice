@@ -127,11 +127,11 @@ check_command "git" "Git"
 echo ""
 echo "🔨 Build Check:"
 if [ -f "src/GA26Demo.csproj" ]; then
-    if grep -q "net8.0" "src/GA26Demo.csproj"; then
-        echo -e "${GREEN}✓${NC} .NET 8.0 target"
+    if grep -q "net10.0" "src/GA26Demo.csproj"; then
+        echo -e "${GREEN}✓${NC} .NET 10.0 target"
         ((PASSED++))
     else
-        echo -e "${YELLOW}⚠${NC} Not targeting .NET 8.0"
+        echo -e "${YELLOW}⚠${NC} Not targeting .NET 10.0"
         ((WARNINGS++))
     fi
     

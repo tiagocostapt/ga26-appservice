@@ -6,7 +6,7 @@ This file contains step-by-step instructions for demonstrating the GA26 Azure Ap
 
 - [ ] Have Azure subscription with budget available (~$20-50 for demo resources)
 - [ ] Azure CLI installed and configured (`az login`)
-- [ ] .NET 8 SDK installed
+- [ ] .NET 10 SDK installed
 - [ ] Script dependencies: Bash/PowerShell shells with execution rights
 - [ ] Network: Good internet connection for live deployment
 - [ ] Credentials: Azure account with Contributor role on subscription
@@ -77,7 +77,7 @@ This file contains step-by-step instructions for demonstrating the GA26 Azure Ap
    - "The demoValue parameter comes from our parameter files"
 
 2. **Point out main resources:**
-   - App Service Plan (Linux, .NET 8)
+   - App Service Plan (Linux, .NET 10)
    - App Service (HTTPS, managed identity)
    - Application Insights (monitoring)
    - Storage Account (diagnostics)
