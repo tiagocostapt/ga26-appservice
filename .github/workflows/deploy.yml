@@ -102,15 +102,15 @@ jobs:
       - name: Create resource group
         run: |
           az group create \
-            --name rg-ga26demo-dev \
+            --name rg-ecs26demo-dev \
             --location ${{ secrets.AZURE_REGION }}
         continue-on-error: true
 
       - name: Deploy Bicep template
         run: |
           az deployment group create \
-            --name ga26-deployment-dev-$(date +%s) \
-            --resource-group rg-ga26demo-dev \
+            --name ecs26-deployment-dev-$(date +%s) \
+            --resource-group rg-ecs26demo-dev \
             --template-file infra/main.bicep \
             --parameters infra/parameters.dev.bicepparam
 
@@ -122,10 +122,10 @@ jobs:
       - name: Deploy app to App Service
         run: |
           APP_NAME=$(az webapp list \
-            --resource-group rg-ga26demo-dev \
+            --resource-group rg-ecs26demo-dev \
             --query '[0].name' -o tsv)
           az webapp deployment source config-zip \
-            --resource-group rg-ga26demo-dev \
+            --resource-group rg-ecs26demo-dev \
             --name "$APP_NAME" \
             --src app.zip
 
@@ -133,7 +133,7 @@ jobs:
         id: app-url
         run: |
           APP_NAME=$(az webapp list \
-            --resource-group rg-ga26demo-dev \
+            --resource-group rg-ecs26demo-dev \
             --query '[0].name' -o tsv)
           echo "app_url=https://${APP_NAME}.azurewebsites.net" >> $GITHUB_OUTPUT
           echo "✓ App deployed to: https://${APP_NAME}.azurewebsites.net"
@@ -142,7 +142,7 @@ jobs:
         run: |
           echo "## ✅ Development Deployment Successful" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Resource Group:** \`rg-ga26demo-dev\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Resource Group:** \`rg-ecs26demo-dev\`" >> $GITHUB_STEP_SUMMARY
           echo "**Region:** \`${{ secrets.AZURE_REGION }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Application" >> $GITHUB_STEP_SUMMARY
@@ -176,15 +176,15 @@ jobs:
       - name: Create resource group
         run: |
           az group create \
-            --name rg-ga26demo-prod \
+            --name rg-ecs26demo-prod \
             --location ${{ secrets.AZURE_REGION }}
         continue-on-error: true
 
       - name: Deploy Bicep template
         run: |
           az deployment group create \
-            --name ga26-deployment-prod-$(date +%s) \
-            --resource-group rg-ga26demo-prod \
+            --name ecs26-deployment-prod-$(date +%s) \
+            --resource-group rg-ecs26demo-prod \
             --template-file infra/main.bicep \
             --parameters infra/parameters.prod.bicepparam
 
@@ -196,10 +196,10 @@ jobs:
       - name: Deploy app to App Service
         run: |
           APP_NAME=$(az webapp list \
-            --resource-group rg-ga26demo-prod \
+            --resource-group rg-ecs26demo-prod \
             --query '[0].name' -o tsv)
           az webapp deployment source config-zip \
-            --resource-group rg-ga26demo-prod \
+            --resource-group rg-ecs26demo-prod \
             --name "$APP_NAME" \
             --src app.zip
 
@@ -207,7 +207,7 @@ jobs:
         id: app-url
         run: |
           APP_NAME=$(az webapp list \
-            --resource-group rg-ga26demo-prod \
+            --resource-group rg-ecs26demo-prod \
             --query '[0].name' -o tsv)
           echo "app_url=https://${APP_NAME}.azurewebsites.net" >> $GITHUB_OUTPUT
           echo "✓ App deployed to: https://${APP_NAME}.azurewebsites.net"
@@ -216,7 +216,7 @@ jobs:
         run: |
           echo "## ✅ Production Deployment Successful" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Resource Group:** \`rg-ga26demo-prod\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Resource Group:** \`rg-ecs26demo-prod\`" >> $GITHUB_STEP_SUMMARY
           echo "**Region:** \`${{ secrets.AZURE_REGION }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Application" >> $GITHUB_STEP_SUMMARY
