@@ -1,4 +1,4 @@
-metadata description = 'GA26 Demo: Azure App Service with Infrastructure as Code using Bicep'
+metadata description = 'Demo: Azure App Service with Infrastructure as Code using Bicep'
 
 @description('The name of the application')
 param appName string
@@ -10,7 +10,7 @@ param environment string
 param location string = resourceGroup().location
 
 @description('SKU for App Service Plan')
-param appServicePlanSku string = 'B1'
+param appServicePlanSku string = 'P0V3'
 
 @description('Demo value to be displayed in the application')
 param demoValue string = 'Deployed via Bicep IaC'
@@ -22,7 +22,7 @@ param enableApplicationInsights bool = true
 param tags object = {
   environment: environment
   createdBy: 'Bicep'
-  project: 'GA26Demo'
+  project: 'Demo'
 }
 
 // Generate unique suffix for storage account (must be globally unique)

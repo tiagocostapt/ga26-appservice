@@ -1,14 +1,14 @@
 using './main.bicep'
 
-param appName = 'ga26demo'
+param appName = 'ecs26demo'
 param environment = 'dev'
-param location = 'eastus'
-param appServicePlanSku = 'B1'
+param location = 'westeurope'
+param appServicePlanSku = 'P0V3'
 param demoValue = 'Development Environment - Deployed via Bicep'
 param enableApplicationInsights = true
 param tags = {
   environment: 'dev'
   createdBy: 'Bicep'
-  project: 'GA26Demo'
+  project: 'ECS26Demo'
   costCenter: 'demo'
 }
