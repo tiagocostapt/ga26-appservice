@@ -81,7 +81,7 @@ jobs:
     name: Deploy to Development
     runs-on: ubuntu-latest
     env:
-      RESOURCE_GROUP: rg-ecs26demo-dev
+      RESOURCE_GROUP: rg-ecs26demo-dev2
     needs: [validate, build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev'
     environment:
